@@ -1,12 +1,37 @@
 from google_images_download import google_images_download   #importing the library
-import input_output as inp
+import os
 
 response = google_images_download.googleimagesdownload()   #class instantiation
 
+def getFns(folder_path):
+    file_names = []
+    onlyfiles = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
+    for i in onlyfiles:
+        file_names.append(i)
+    return file_names, folder_path
 
-terms = "sprite sheet"
-subjects = inp.import1dArray("data/wikipedia/snes_clean.txt")
+def importText(file_name, encoding="utf8"):
+    array = []
+    with open(file_name, "r", encoding=encoding) as infile:
+        for line in infile:
+            array.append(line.strip())
+    return array
 
-arguments = {"keywords":"mario sprite sheet,zelda sprite sheet,sonic sprite sheet,final fantasy sprite sheet, metal slug sprite sheet,yoshi sprite sheet,kirby sprite sheet,chrono trigger sprite sheet, donkey kong country sprite sheet, secret of mana sprite sheet, earthbound sprite sheet, street fighter sprite sheet, castlevania sprite sheet,F-zero sprite sheet, contra sprite sheet, super ghouls n ghosts sprite sheet, teenage mutant ninja turtles sprite sheet","limit":100,"print_urls":True}   #creating list of arguments
-paths = response.download(arguments)   #passing the arguments to the function
-print(paths)   #printing absolute paths of the downloaded images
+fns, folder = getFns("videogames/")
+
+for i in range(len(fns)):
+    terms = ["sprite sheet"]
+    subjects = importText(folder + fns[i])
+    for j in range(len(subjects)):
+        for n in range(len(terms)):
+            input = subjects[j] + " " + terms[n]
+            if os.path.exists("downloads/" + input):
+                continue
+            if len(subjects[j].strip()) <= 1:
+                continue
+            try:
+                arguments = {"keywords":input,"limit":100,"print_urls":True}   #creating list of arguments
+                paths = response.download(arguments)   #passing the arguments to the function
+                print(paths)   #printing absolute paths of the downloaded images
+            except (NotADirectoryError, FileNotFoundError, OSError):
+                continue
