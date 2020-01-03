@@ -17,21 +17,22 @@ def importText(file_name, encoding="utf8"):
             array.append(line.strip())
     return array
 
-fns, folder = getFns("videogames/")
+if __name__ == '__main__':
+    fns, folder = getFns("videogames/")
 
-for i in range(len(fns)):
-    terms = ["sprite sheet"]
-    subjects = importText(folder + fns[i])
-    for j in range(len(subjects)):
-        for n in range(len(terms)):
-            input = subjects[j] + " " + terms[n]
-            if os.path.exists("downloads/" + input):
-                continue
-            if len(subjects[j].strip()) <= 1:
-                continue
-            try:
-                arguments = {"keywords":input,"limit":100,"print_urls":True}   #creating list of arguments
-                paths = response.download(arguments)   #passing the arguments to the function
-                print(paths)   #printing absolute paths of the downloaded images
-            except (NotADirectoryError, FileNotFoundError, OSError):
-                continue
+    for i in range(len(fns)):
+        terms = ["sprite sheet"]
+        subjects = importText(folder + fns[i])
+        for j in range(len(subjects)):
+            for n in range(len(terms)):
+                input = (subjects[j] + " " + terms[n]).strip()
+                if os.path.exists("downloads/" + input):
+                    continue
+                if len(subjects[j].strip()) <= 1:
+                    continue
+                try:
+                    arguments = {"keywords":input,"limit":100,"print_urls":True}   #creating list of arguments
+                    paths = response.download(arguments)   #passing the arguments to the function
+                    print(paths)   #printing absolute paths of the downloaded images
+                except (NotADirectoryError, FileNotFoundError, OSError, UnicodeDecodeError):
+                    continue
